@@ -47,3 +47,4 @@ public class AppPaths {
         return BASE_DIRECTORY.resolve(folderName);
     }
 }
+

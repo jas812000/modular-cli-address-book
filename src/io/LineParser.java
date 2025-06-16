@@ -16,3 +16,4 @@ public interface LineParser<T> {
      */
     T parse(String[] tokens);
 }
+

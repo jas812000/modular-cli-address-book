@@ -108,3 +108,4 @@ public class Contact implements Matchable {
     public List<PhoneNumber> getPhoneNumbers() { return phoneNumbers; }
     public List<EmailAddress> getEmailAddresses() { return emailAddresses; }
 }
+

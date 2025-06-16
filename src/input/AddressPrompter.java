@@ -38,3 +38,4 @@ public class AddressPrompter {
         return addresses;
     }
 }
+

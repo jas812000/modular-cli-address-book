@@ -27,3 +27,4 @@ public class OptionsHandler {
         ContactDisplayFormatter.displayFormatted(manager.getContacts());
     }
 }
+

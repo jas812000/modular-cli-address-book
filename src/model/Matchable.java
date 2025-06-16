@@ -12,3 +12,4 @@ public interface Matchable {
      */
     boolean matches(String query);
 }
+
