@@ -26,6 +26,10 @@ public class AddressBookManager {
         this.filePath = filePath;
     }
 
+    /**
+     * Loads contacts from persistent storage into memory.
+     * If no file exists, the address book starts empty.
+     */
     public void loadContacts() throws IOException {
         if (!FileLoader.fileExists(filePath)) {
             System.out.println("No address book found. Starting empty.");
@@ -38,6 +42,9 @@ public class AddressBookManager {
         contacts = contactParser.parseLines(lines);
     }
 
+    /**
+     * Serializes all contacts and writes them to persistent storage.
+     */
     public void saveContacts() throws IOException {
         List<String> toWrite = contacts.stream().map(Contact::toString).toList();
         FileSaver.saveLines(filePath, toWrite);
