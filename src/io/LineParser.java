@@ -2,6 +2,7 @@ package io;
 
 /**
  * Functional interface for converting an array of string tokens into a typed object.
+ * Used to decouple file parsing from object construction
  *
  * @param <T> the target object type
  */
