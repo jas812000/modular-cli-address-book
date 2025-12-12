@@ -3,7 +3,8 @@ package input;
 import java.util.Scanner;
 
 /**
- * Utility class for common user prompts.
+ * Shared utility class for common user prompts.
+ * Centralizes repeated prompt logic to keep input classes simple.
  */
 public class PromptUtils {
 
