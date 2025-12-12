@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Parses a list of lines into objects using a delimiter and a mapping function.
+ * Generic utility for converting raw file lines into typed domain objects.
  *
- * @param <T> the type of object to return
+ * Uses a delimiter-based split and delegates object construction
+ * to a provided LineParser implementation.
  */
 public class FileParser<T> {
-
     private final String delimiterRegex;
     private final LineParser<T> parser;
 
@@ -26,7 +26,8 @@ public class FileParser<T> {
 
     /**
      * Parses all lines into a list of objects.
-     *
+     * Blank lines are skipped to avoid invalid entries.
+     * 
      * @param lines list of raw lines from file
      * @return list of parsed objects
      */
