@@ -11,11 +11,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * Manages the loading, saving, and in-memory manipulation of contacts.
+ * Central manager responsible for loading, saving, and maintaining
+ * the in-memory list of contacts.
+ *
+ * Acts as the boundary between persistent storage and application logic.
  */
 public class AddressBookManager {
-
     private final Path filePath;
     private List<Contact> contacts = new ArrayList<>();
 
