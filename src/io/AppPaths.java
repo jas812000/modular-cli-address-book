@@ -4,8 +4,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Centralized file and directory path manager.
- * Allows runtime configuration via environment variable: APP_DATA_DIR
+ * Centralized path resolution utility for application data.
+ *
+ * Allows the base data directory to be configured at runtime
+ * using an environment variable, with a safe default fallback.
  */
 public class AppPaths {
 
@@ -15,7 +17,8 @@ public class AppPaths {
     // Base directory, resolved at runtime
     public static final Path BASE_DIRECTORY;
 
-    // Static initializer block runs once when class is loaded
+
+    // Resolve base directory once at class load time
     static {
         String envPath = System.getenv(ENV_VAR);
         if (envPath != null && !envPath.isBlank()) {
