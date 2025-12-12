@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * Displays all contacts in a simple numbered list.
+ * Intended for quick selectiona nd overview, not full detailed display.
  */
 public class ContactViewer {
 
