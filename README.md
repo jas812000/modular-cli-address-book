@@ -30,12 +30,12 @@ Data is saved to disk and restored across application runs.
 
 The application is organized into focused packages, each with a single responsibility:
 
-- **input** – User prompts, menu flow, and session control
-- **editor** – Modular editors for modifying specific contact fields
-- **display** – Centralized contact formatting and presentation
-- **model** – Domain objects (Contact, Address, PhoneNumber, EmailAddress)
-- **manager** – In-memory contact management and persistence coordination
-- **io** – File loading, saving, parsing, and path resolution
+- **input** – User prompts, menu flow, and session control  
+- **editor** – Modular editors for modifying specific contact fields  
+- **display** – Centralized contact formatting and presentation  
+- **model** – Domain objects and search-matching behavior  
+- **manager** – In-memory contact management and persistence coordination  
+- **io** – File I/O, parsing utilities, and runtime path configuration  
 
 Search behavior is implemented through a shared `Matchable` interface, allowing consistent query handling across domain objects.
 
@@ -48,8 +48,8 @@ File persistence is abstracted through reusable loader, saver, and parser utilit
 Contacts are stored in a structured, delimiter-based text file.
 
 - Each contact is serialized to a single line
-- Nested data (addresses, phones, emails) is encoded with predictable delimiters
-- Files are loaded and parsed at startup and saved on exit
+- Nested data (addresses, phones, emails) is encoded with predictable token separators
+- Files are loaded at application startup and saved on exit
 
 The storage location can be configured at runtime using an environment variable.
 
@@ -63,3 +63,31 @@ To override the base directory, set the environment variable:
 
 ```bash
 APP_DATA_DIR=/path/to/data
+```
+
+## Technologies Used
+- Java
+- Java NIO (Path, Files)
+- Command-line I/O
+- Object-oriented design
+- Modular application structure
+
+---
+
+## What This Project Demonstrates
+- Clean modular design in a non-trivial CLI application
+- Practical file persistence without external frameworks
+- Searchable domain models with minimal coupling
+- Maintainable separation between UI flow, domain logic, and storage
+- Engineering-focused problem solving in a constrained interface
+
+---
+
+## License
+© 2025 James Stevens. All rights reserved.
+
+This repository is provided for educational, evaluation, and portfolio review purposes. You may clone and run the code locally for non-commercial review.
+
+Commercial use, redistribution, or modification beyond review purposes requires explicit permission from the author.
+
+--- 
