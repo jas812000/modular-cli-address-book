@@ -1,5 +1,6 @@
 package addressbook.manager;
 
+import addressbook.io.AppPaths;
 import addressbook.io.FileLoader;
 import addressbook.io.FileParser;
 import addressbook.io.FileSaver;
@@ -9,8 +10,8 @@ import addressbook.model.Contact;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
 
 /**
  * Central manager responsible for loading, saving, and maintaining
@@ -19,11 +20,23 @@ import java.util.List;
  * Acts as the boundary between persistent storage and application logic.
  */
 public class AddressBookManager {
+
     private final Path filePath;
+    private final FileParser<Contact> contactParser;
+
     private List<Contact> contacts = new ArrayList<>();
 
+    /** Production constructor (APP_DATA_DIR override supported via AppPaths). */
+    public AddressBookManager() {
+        Path baseDir = AppPaths.ensureBaseDirectoryExists();
+        this.filePath = AppPaths.addressBookFile(baseDir);
+        this.contactParser = new FileParser<>(";", Contact::fromString);
+    }
+
+    /** Test-friendly constructor: inject an explicit file path. */
     public AddressBookManager(Path filePath) {
         this.filePath = filePath;
+        this.contactParser = new FileParser<>(";", Contact::fromString);
     }
 
     /**
@@ -32,13 +45,12 @@ public class AddressBookManager {
      */
     public void loadContacts() throws IOException {
         if (!FileLoader.fileExists(filePath)) {
-            System.out.println("No address book found. Starting empty.");
+            // Start empty. No printing here (keeps manager test-friendly).
+            contacts = new ArrayList<>();
             return;
         }
 
         List<String> lines = FileLoader.loadLines(filePath);
-        LineParser<Contact> parser = Contact::fromString;
-        FileParser<Contact> contactParser = new FileParser<>(";", parser);
         contacts = contactParser.parseLines(lines);
     }
 
@@ -54,8 +66,14 @@ public class AddressBookManager {
         contacts.add(contact);
     }
 
+    /** Expose a read-only view to prevent external mutation. */
     public List<Contact> getContacts() {
-        return contacts;
+        return Collections.unmodifiableList(contacts);
+    }
+
+    /** Handy for testing/debugging. */
+    public Path getFilePath() {
+        return filePath;
     }
 }
 
