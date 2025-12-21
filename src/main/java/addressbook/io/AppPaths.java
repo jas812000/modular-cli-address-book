@@ -1,5 +1,7 @@
 package addressbook.io;
 
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -8,46 +10,63 @@ import java.nio.file.Paths;
  *
  * Allows the base data directory to be configured at runtime
  * using an environment variable, with a safe default fallback.
+ *
+ * Design goals:
+ * - No static Path constants (avoids hard-to-test global state)
+ * - Methods are deterministic and easy to override in tests
+ * - Directory creation is explicit via ensure* methods
  */
 public class AppPaths {
 
-    // Environment variable name
     private static final String ENV_VAR = "APP_DATA_DIR";
+    private static final String DEFAULT_DIR = "data";
+    private static final String ADDRESS_BOOK_FILENAME = "address_book.csv";
 
-    // Base directory, resolved at runtime
-    public static final Path BASE_DIRECTORY;
+    private AppPaths() {}
 
+    /** Production default base directory (env var override). */
+    public static Path baseDirectory() {
+        String env = System.getenv(ENV_VAR);
+        if (env == null || env.isBlank()) {
+            return Paths.get(DEFAULT_DIR);
+        }
+        return Paths.get(env);
+    }
 
-    // Resolve base directory once at class load time
-    static {
-        String envPath = System.getenv(ENV_VAR);
-        if (envPath != null && !envPath.isBlank()) {
-            BASE_DIRECTORY = Paths.get(envPath);
-        } else {
-            BASE_DIRECTORY = Paths.get("data"); // Default fallback
+    /** Ensure production base directory exists and return it. */
+    public static Path ensureBaseDirectoryExists() {
+        return ensureBaseDirectoryExists(baseDirectory());
+    }
+
+    /** Testable: ensure any base directory exists and return it. */
+    public static Path ensureBaseDirectoryExists(Path baseDirectory) {
+        try {
+            Files.createDirectories(baseDirectory);
+            return baseDirectory;
+        } catch (java.io.IOException e) {
+            throw new UncheckedIOException("Failed to create data directory: " + baseDirectory, e);
         }
     }
 
-    // File paths
-    //public static final Path CUSTOMER_FILE = BASE_DIRECTORY.resolve("customers.csv");
-    //public static final Path TRANSACTION_FILE = BASE_DIRECTORY.resolve("transactions.txt");
-    //public static final Path INVENTORY_FILE = BASE_DIRECTORY.resolve("inventory.txt");
-    //public static final Path CONFIG_FILE = BASE_DIRECTORY.resolve("config.properties");
-    //public static final Path LOG_FILE = BASE_DIRECTORY.resolve("app.log");
-    public static final Path ADDRESS_BOOK_FILE = BASE_DIRECTORY.resolve("address_book.csv");
-
-    /**
-     * Dynamically resolve any file inside the base directory.
-     */
-    public static Path getFile(String fileName) {
-        return BASE_DIRECTORY.resolve(fileName);
+    /** Production default address book file location. */
+    public static Path addressBookFile() {
+        return addressBookFile(baseDirectory());
     }
 
-    /**
-     * Dynamically resolve a subdirectory path inside the base directory.
-     */
-    public static Path getSubDirectory(String folderName) {
-        return BASE_DIRECTORY.resolve(folderName);
+    /** Testable: compute address book file for any base directory. */
+    public static Path addressBookFile(Path baseDirectory) {
+        return baseDirectory.resolve(ADDRESS_BOOK_FILENAME);
+    }
+    
+    /** Backward-compatible helper used by FileLoader/FileSaver. */
+    public static Path getFile(String filename) {
+	Path base = ensureBaseDirectoryExists();
+        return getFile(base, filename);        
+    }
+
+    /** Testable overload: resolve filename under a provided base directory. */
+    public static Path getFile(Path baseDirectory, String filename) {
+        return baseDirectory.resolve(filename);
     }
 }
 
