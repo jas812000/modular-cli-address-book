@@ -56,7 +56,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>Main</mainClass>
+              <mainClass>app.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -68,7 +68,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.3.0</version>
         <configuration>
-          <mainClass>Main</mainClass>
+          <mainClass>app.Main</mainClass>
         </configuration>
       </plugin>
 
