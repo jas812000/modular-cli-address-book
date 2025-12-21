@@ -179,18 +179,10 @@ src/
 - Clean Maven project structure
 
 ---
- 
-## Roadmap / Possible Improvements
-- Validation feedback surfaced in the CLI
-- CSV schema versioning
-- Import/export support
-- Additional search filters
-- Optional JSON persistence format
-
----
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. 
+See the [LICENSE](LICENSE) file for details.
 
 ---
 
