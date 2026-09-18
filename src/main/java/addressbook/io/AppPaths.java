@@ -1,72 +1,112 @@
 package addressbook.io;
 
+import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Centralized path resolution utility for application data.
+ * Centralizes resolution of application data paths.
  *
- * Allows the base data directory to be configured at runtime
- * using an environment variable, with a safe default fallback.
- *
- * Design goals:
- * - No static Path constants (avoids hard-to-test global state)
- * - Methods are deterministic and easy to override in tests
- * - Directory creation is explicit via ensure* methods
+ * <p>The {@code APP_DATA_DIR} environment variable may override the
+ * default {@code data} directory. Overloads accepting explicit paths
+ * support isolated filesystem testing.</p>
  */
-public class AppPaths {
+public final class AppPaths {
 
     private static final String ENV_VAR = "APP_DATA_DIR";
     private static final String DEFAULT_DIR = "data";
     private static final String ADDRESS_BOOK_FILENAME = "address_book.csv";
 
-    private AppPaths() {}
+    /**
+     * Prevents instantiation because this class provides only static utility methods.
+     */
+    private AppPaths() {
+    }
 
-    /** Production default base directory (env var override). */
+    /**
+     * Returns the configured application data directory.
+     *
+     * @return configured or default data directory
+     */
     public static Path baseDirectory() {
         String env = System.getenv(ENV_VAR);
+
         if (env == null || env.isBlank()) {
             return Paths.get(DEFAULT_DIR);
         }
+
         return Paths.get(env);
     }
 
-    /** Ensure production base directory exists and return it. */
+    /**
+     * Ensures that the configured application data directory exists.
+     *
+     * @return application data directory
+     * @throws UncheckedIOException if the directory cannot be created
+     */
     public static Path ensureBaseDirectoryExists() {
         return ensureBaseDirectoryExists(baseDirectory());
     }
 
-    /** Testable: ensure any base directory exists and return it. */
+    /**
+     * Ensures that the specified data directory exists.
+     *
+     * @param baseDirectory directory to create if necessary
+     * @return supplied directory
+     * @throws UncheckedIOException if the directory cannot be created
+     */
     public static Path ensureBaseDirectoryExists(Path baseDirectory) {
         try {
             Files.createDirectories(baseDirectory);
             return baseDirectory;
-        } catch (java.io.IOException e) {
-            throw new UncheckedIOException("Failed to create data directory: " + baseDirectory, e);
+        } catch (IOException e) {
+            throw new UncheckedIOException(
+                    "Failed to create data directory: " + baseDirectory,
+                    e
+            );
         }
     }
 
-    /** Production default address book file location. */
+    /**
+     * Returns the default address book file path.
+     *
+     * @return address book file path
+     */
     public static Path addressBookFile() {
         return addressBookFile(baseDirectory());
     }
 
-    /** Testable: compute address book file for any base directory. */
+    /**
+     * Resolves the address book file beneath the specified base directory.
+     *
+     * @param baseDirectory base data directory
+     * @return address book file path
+     */
     public static Path addressBookFile(Path baseDirectory) {
         return baseDirectory.resolve(ADDRESS_BOOK_FILENAME);
     }
-    
-    /** Backward-compatible helper used by FileLoader/FileSaver. */
-    public static Path getFile(String filename) {
-	Path base = ensureBaseDirectoryExists();
-        return getFile(base, filename);        
+
+    /**
+     * Resolves a named file beneath the application's base data directory.
+     *
+     * @param fileName file name
+     * @return resolved file path
+     */
+    public static Path getFile(String fileName) {
+        Path baseDirectory = ensureBaseDirectoryExists();
+        return getFile(baseDirectory, fileName);
     }
 
-    /** Testable overload: resolve filename under a provided base directory. */
-    public static Path getFile(Path baseDirectory, String filename) {
-        return baseDirectory.resolve(filename);
+    /**
+     * Resolves a named file beneath the specified base directory.
+     *
+     * @param baseDirectory base data directory
+     * @param fileName file name
+     * @return resolved file path
+     */
+    public static Path getFile(Path baseDirectory, String fileName) {
+        return baseDirectory.resolve(fileName);
     }
 }
-

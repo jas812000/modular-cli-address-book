@@ -11,7 +11,8 @@ class FileParserTest {
 
     @Test
     void parseLines_skipsBlankLines() {
-        FileParser<String> parser = new FileParser<>(";", tokens -> tokens[0]);
+        FileParser<String> parser =
+                new FileParser<>(";", tokens -> tokens[0]);
 
         List<String> lines = List.of(
                 "one;two",
@@ -28,7 +29,8 @@ class FileParserTest {
 
     @Test
     void parseLines_parsesContactsUsingSemicolonDelimiter() {
-        FileParser<Contact> parser = new FileParser<>(";", Contact::fromString);
+        FileParser<Contact> parser =
+                new FileParser<>(";", Contact::fromString);
 
         List<String> lines = List.of(
                 "James,,Stevens;Home:123 Maple St|Chicago|IL|60601;Mobile:312-555-0101;Personal:james@example.com",
@@ -38,7 +40,37 @@ class FileParserTest {
         List<Contact> contacts = parser.parseLines(lines);
 
         assertEquals(2, contacts.size());
-        assertEquals("James Stevens", contacts.get(0).getFullName());
-        assertEquals("Maria Elena Garcia", contacts.get(1).getFullName());
+        assertEquals(
+                "James Stevens",
+                contacts.get(0).getFullName()
+        );
+        assertEquals(
+                "Maria Elena Garcia",
+                contacts.get(1).getFullName()
+        );
+    }
+
+    @Test
+    void parseLines_malformedRecord_skipsRecordAndContinues() {
+        FileParser<Contact> parser =
+                new FileParser<>(";", Contact::fromString);
+
+        List<String> lines = List.of(
+                "James,,Stevens;Mobile:312-555-0101",
+                "Malformed",
+                "Maria,Elena,Garcia;Personal:maria@example.com"
+        );
+
+        List<Contact> contacts = parser.parseLines(lines);
+
+        assertEquals(2, contacts.size());
+        assertEquals(
+                "James Stevens",
+                contacts.get(0).getFullName()
+        );
+        assertEquals(
+                "Maria Elena Garcia",
+                contacts.get(1).getFullName()
+        );
     }
 }

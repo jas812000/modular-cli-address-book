@@ -1,30 +1,42 @@
 package addressbook.editor;
 
+import addressbook.input.PromptUtils;
 import addressbook.model.Contact;
 
-import java.util.Scanner;
-
 /**
- * Handles editing a contact's name (first, middle, last).
+ * Handles editing a contact's first, middle, and last name.
  */
-public class NameEditor {
+public final class NameEditor {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    /**
+     * Prevents instantiation because this class provides only static utility methods.
+     */
+    private NameEditor() {
+    }
 
-    public static void edit(Contact contact) {
+    /**
+     * Prompts for replacement name values and updates the contact.
+     *
+     * @param contact contact whose name will be updated
+     * @return {@code true} when the contact is updated
+     */
+    public static boolean edit(Contact contact) {
         System.out.print("New First Name: ");
-        String first = scanner.nextLine();
+        String first = PromptUtils.readOperationLine().trim();
 
         System.out.print("New Middle Name (blank for none): ");
-        String middle = scanner.nextLine();
-        if (middle.isBlank()) middle = null;
+        String middle = PromptUtils.readOperationLine().trim();
+
+        if (middle.isBlank()) {
+            middle = null;
+        }
 
         System.out.print("New Last Name: ");
-        String last = scanner.nextLine();
+        String last = PromptUtils.readOperationLine().trim();
 
         contact.setName(first, middle, last);
+
         System.out.println("Name updated.");
+        return true;
     }
 }
-
-

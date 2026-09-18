@@ -2,25 +2,36 @@ package addressbook.input;
 
 import addressbook.model.Contact;
 
-import java.util.Scanner;
-
 /**
- * Handles input for the overall Contact object.
+ * Collects the information required to create a contact.
  */
-public class ContactPrompter {
+public final class ContactPrompter {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    /**
+     * Prevents instantiation because this class provides only static utility methods.
+     */
+    private ContactPrompter() {
+    }
 
+    /**
+     * Prompts the user for a contact's name, addresses, phone numbers,
+     * and email addresses.
+     *
+     * @return newly created contact
+     */
     public static Contact prompt() {
-        System.out.print("First name: ");
-        String firstName = scanner.nextLine().trim();
+        String firstName = promptForRequiredName(
+                "First name (or \"exit\" to leave): "
+        );
 
         System.out.print("Middle name (optional): ");
-        String middleName = scanner.nextLine().trim();
-        if (middleName.isBlank()) middleName = null;
+        String middleName = PromptUtils.readOperationLine().trim();
 
-        System.out.print("Last name: ");
-        String lastName = scanner.nextLine().trim();
+        if (middleName.isBlank()) {
+            middleName = null;
+        }
+
+        String lastName = promptForRequiredName("Last name: ");
 
         return new Contact(
                 firstName,
@@ -31,5 +42,26 @@ public class ContactPrompter {
                 EmailAddressPrompter.prompt()
         );
     }
-}
 
+    /**
+     * Prompts until a nonblank required name is entered.
+     *
+     * <p>The entered value is otherwise preserved, allowing compound,
+     * hyphenated, and other valid name formats.</p>
+     *
+     * @param prompt prompt displayed to the user
+     * @return entered nonblank name
+     */
+    private static String promptForRequiredName(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String name = PromptUtils.readOperationLine().trim();
+
+            if (!name.isBlank()) {
+                return name;
+            }
+
+            System.out.println("This field is required.");
+        }
+    }
+}

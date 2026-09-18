@@ -3,28 +3,42 @@ package addressbook.input;
 import addressbook.display.ContactDisplayFormatter;
 import addressbook.editor.ContactEditor;
 import addressbook.manager.AddressBookManager;
+import addressbook.model.Contact;
 
 /**
- * Provides core options for creating and modifying contacts.
- * Delegates specific tasks like displaying and searching to dedicated classes.
+ * Coordinates high-level contact creation and editing operations.
  */
-public class OptionsHandler {
+public final class OptionsHandler {
 
-    public static void createNewContact(AddressBookManager manager) {
-        var newContact = ContactPrompter.prompt();
-        manager.addContact(newContact);
-        System.out.println("Contact added.");
-    }
-
-    public static void editOrDeleteDataPoint(AddressBookManager manager) {
-        ContactEditor.modifyContact(manager);
+    /**
+     * Prevents instantiation because this class provides only static utility methods.
+     */
+    private OptionsHandler() {
     }
 
     /**
-     * Display all contacts in a human-readable formatted style.
+     * Prompts for a new contact, adds it to the address book,
+     * and displays the completed contact.
+     *
+     * @param manager manager responsible for the address book
      */
-    public static void displayFormattedContacts(AddressBookManager manager) {
-        ContactDisplayFormatter.displayFormatted(manager.getContacts());
+    public static void createNewContact(AddressBookManager manager) {
+        Contact newContact = ContactPrompter.prompt();
+
+        manager.addContact(newContact);
+
+        System.out.println(
+                "\nContact added:\n"
+                        + ContactDisplayFormatter.formatContact(newContact)
+        );
+    }
+
+    /**
+     * Starts the interactive contact-editing workflow.
+     *
+     * @param manager manager containing the contacts
+     */
+    public static void editContact(AddressBookManager manager) {
+        ContactEditor.modifyContact(manager);
     }
 }
-

@@ -1,20 +1,18 @@
 package addressbook.io;
 
 /**
- * Functional interface for converting an array of string tokens into a typed object.
- * Used to decouple file parsing from object construction
+ * Defines parsing behavior for converting string tokens into a typed object.
  *
- * @param <T> the target object type
+ * @param <T> target object type
  */
 @FunctionalInterface
 public interface LineParser<T> {
 
     /**
-     * Parses an array of string tokens into an object of type T.
+     * Parses string tokens into an object.
      *
-     * @param tokens the tokens extracted from a line
-     * @return a parsed object of type T
+     * @param tokens tokens extracted from a line
+     * @return parsed object
      */
     T parse(String[] tokens);
 }
-
