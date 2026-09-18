@@ -1,53 +1,61 @@
 package addressbook.io;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Generic file loader utility class.
- * Uses AppPaths for directory resolution if needed.
+ * Provides file-reading operations for application data.
  */
-public class FileLoader {
+public final class FileLoader {
 
     /**
-     * Loads all lines from a file.
+     * Prevents instantiation because this class provides only static utility methods.
+     */
+    private FileLoader() {
+    }
+
+    /**
+     * Reads all lines from a file.
      *
-     * @param path the path to the file
-     * @return list of lines
-     * @throws IOException if reading fails
+     * @param path file to read
+     * @return lines read from the file
+     * @throws IOException if the file cannot be read
      */
     public static List<String> loadLines(Path path) throws IOException {
         return Files.readAllLines(path);
     }
 
     /**
-     * Loads the entire file content as a single string.
+     * Reads the entire contents of a file as a string.
      *
-     * @param path the path to the file
-     * @return full content as one string
-     * @throws IOException if reading fails
+     * @param path file to read
+     * @return file contents
+     * @throws IOException if the file cannot be read
      */
     public static String loadAsString(Path path) throws IOException {
         return Files.readString(path);
     }
 
     /**
-     * Loads file lines from a named file inside the base directory.
+     * Reads all lines from a named file in the application's base data directory.
      *
-     * @param fileName name of file (e.g. "customers.csv")
-     * @return list of lines
-     * @throws IOException if reading fails
+     * @param fileName file name
+     * @return lines read from the file
+     * @throws IOException if the file cannot be read
      */
     public static List<String> loadLinesFromBase(String fileName) throws IOException {
         return loadLines(AppPaths.getFile(fileName));
     }
 
     /**
-     * Checks whether a file exists.
+     * Determines whether the specified file exists.
+     *
+     * @param path file to check
+     * @return {@code true} if the file exists
      */
     public static boolean fileExists(Path path) {
         return Files.exists(path);
     }
 }
-

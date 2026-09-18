@@ -4,7 +4,6 @@ import addressbook.io.AppPaths;
 import addressbook.io.FileLoader;
 import addressbook.io.FileParser;
 import addressbook.io.FileSaver;
-import addressbook.io.LineParser;
 import addressbook.model.Contact;
 
 import java.io.IOException;
@@ -14,10 +13,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Central manager responsible for loading, saving, and maintaining
- * the in-memory list of contacts.
- *
- * Acts as the boundary between persistent storage and application logic.
+ * Manages the in-memory collection of contacts and coordinates
+ * loading and saving contacts through the persistence layer.
  */
 public class AddressBookManager {
 
@@ -26,14 +23,23 @@ public class AddressBookManager {
 
     private List<Contact> contacts = new ArrayList<>();
 
-    /** Production constructor (APP_DATA_DIR override supported via AppPaths). */
+    /**
+     * Creates a manager using the application's configured data directory.
+     * The {@code APP_DATA_DIR} environment variable may override the
+     * default data directory.
+     */
     public AddressBookManager() {
         Path baseDir = AppPaths.ensureBaseDirectoryExists();
         this.filePath = AppPaths.addressBookFile(baseDir);
         this.contactParser = new FileParser<>(";", Contact::fromString);
     }
 
-    /** Test-friendly constructor: inject an explicit file path. */
+    /**
+     * Creates a manager using an explicitly provided address book file.
+     * This constructor supports isolated filesystem testing.
+     *
+     * @param filePath path to the address book file
+     */
     public AddressBookManager(Path filePath) {
         this.filePath = filePath;
         this.contactParser = new FileParser<>(";", Contact::fromString);
@@ -41,11 +47,13 @@ public class AddressBookManager {
 
     /**
      * Loads contacts from persistent storage into memory.
-     * If no file exists, the address book starts empty.
+     * If the address book file does not exist, the manager starts
+     * with an empty contact collection.
+     *
+     * @throws IOException if the address book file cannot be read
      */
     public void loadContacts() throws IOException {
         if (!FileLoader.fileExists(filePath)) {
-            // Start empty. No printing here (keeps manager test-friendly).
             contacts = new ArrayList<>();
             return;
         }
@@ -55,25 +63,52 @@ public class AddressBookManager {
     }
 
     /**
-     * Serializes all contacts and writes them to persistent storage.
+     * Serializes the current contacts and writes them to persistent storage.
+     *
+     * @throws IOException if the address book file cannot be written
      */
     public void saveContacts() throws IOException {
-        List<String> toWrite = contacts.stream().map(Contact::toString).toList();
+        List<String> toWrite = contacts.stream()
+                .map(Contact::toString)
+                .toList();
+
         FileSaver.saveLines(filePath, toWrite);
     }
 
+    /**
+     * Adds a contact to the address book.
+     *
+     * @param contact contact to add
+     */
     public void addContact(Contact contact) {
         contacts.add(contact);
     }
 
-    /** Expose a read-only view to prevent external mutation. */
+    /**
+     * Removes the specified contact from the address book.
+     *
+     * @param contact contact to remove
+     * @return {@code true} if the contact was present and removed
+     */
+    public boolean removeContact(Contact contact) {
+        return contacts.remove(contact);
+    }
+
+    /**
+     * Returns an unmodifiable view of the contacts in the address book.
+     *
+     * @return unmodifiable list of contacts
+     */
     public List<Contact> getContacts() {
         return Collections.unmodifiableList(contacts);
     }
 
-    /** Handy for testing/debugging. */
+    /**
+     * Returns the file used for address book persistence.
+     *
+     * @return address book file path
+     */
     public Path getFilePath() {
         return filePath;
     }
 }
-

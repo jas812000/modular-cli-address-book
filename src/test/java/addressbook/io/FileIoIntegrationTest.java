@@ -31,6 +31,7 @@ class FileIoIntegrationTest {
     @Test
     void fileExists_falseForMissingFile() {
         Path missing = tempDir.resolve("missing.csv");
+
         assertFalse(FileLoader.fileExists(missing));
     }
 }

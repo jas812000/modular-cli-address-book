@@ -1,69 +1,81 @@
 package addressbook.display;
 
-import addressbook.model.Contact;
 import addressbook.model.Address;
-import addressbook.model.PhoneNumber;
+import addressbook.model.Contact;
 import addressbook.model.EmailAddress;
-
-import java.util.List;
+import addressbook.model.PhoneNumber;
 
 /**
- * Utility class for displaying contacts in a readable, structured format.
+ * Formats contacts in a readable, structured format.
  */
-public class ContactDisplayFormatter {
+public final class ContactDisplayFormatter {
 
-    private static final String INDENT = "     "; // 5 spaces
-    private static final String SEPARATOR = "---------------";
+    private static final String INDENT = "     ";
+    private static final String NEW_LINE = System.lineSeparator();
 
     /**
-     * Displays a list of contacts in a clean, indented format.
-     *
-     * @param contacts List of contacts to display.
+     * Prevents instantiation because this class provides only static utility methods.
      */
-    public static void displayFormatted(List<Contact> contacts) {
-        for (Contact contact : contacts) {
-            System.out.println(formatContact(contact));
-            System.out.println(SEPARATOR);
-        }
+    private ContactDisplayFormatter() {
     }
 
     /**
-     * Formats a single contact into the structured display string.
+     * Formats a contact for structured console display.
      *
-     * @param contact The contact to format.
-     * @return The formatted string.
+     * <p>Each address, phone number, and email address is displayed
+     * as a separate block for readability.</p>
+     *
+     * @param contact contact to format
+     * @return formatted contact information
      */
     public static String formatContact(Contact contact) {
         StringBuilder sb = new StringBuilder();
 
-        // 1. Full name (single line)
-        sb.append(contact.getFullName()).append("\n");
+        sb.append(contact.getFullName()).append(NEW_LINE);
 
-        // 2. Addresses
-        for (Address addr : contact.getAddresses()) {
-            sb.append(addr.getLabel()).append("\n");
-            sb.append(INDENT).append(addr.getStreetAddress()).append("\n");
+        for (Address address : contact.getAddresses()) {
+            appendBlockSeparator(sb);
+
+            sb.append(address.getLabel()).append(NEW_LINE);
             sb.append(INDENT)
-                    .append(addr.getCity()).append(", ")
-                    .append(addr.getState()).append(" ")
-                    .append(addr.getZip()).append("\n");
+                    .append(address.getStreetAddress())
+                    .append(NEW_LINE);
+            sb.append(INDENT)
+                    .append(address.getCity())
+                    .append(", ")
+                    .append(address.getState())
+                    .append(" ")
+                    .append(address.getZipCode())
+                    .append(NEW_LINE);
         }
 
-        // 3. Phone Numbers
         for (PhoneNumber phone : contact.getPhoneNumbers()) {
-            sb.append(phone.getLabel()).append("\n");
-            sb.append(INDENT).append(phone.getNumber()).append("\n");
+            appendBlockSeparator(sb);
+
+            sb.append(phone.getLabel()).append(NEW_LINE);
+            sb.append(INDENT)
+                    .append(phone.getNumber())
+                    .append(NEW_LINE);
         }
 
-        // 4. Emails
         for (EmailAddress email : contact.getEmailAddresses()) {
-            sb.append(email.getLabel()).append("\n");
-            sb.append(INDENT).append(email.getEmail()).append("\n");
+            appendBlockSeparator(sb);
+
+            sb.append(email.getLabel()).append(NEW_LINE);
+            sb.append(INDENT)
+                    .append(email.getEmail())
+                    .append(NEW_LINE);
         }
 
         return sb.toString();
     }
+
+    /**
+     * Adds a blank line before the next contact-information block.
+     *
+     * @param sb builder containing the formatted contact
+     */
+    private static void appendBlockSeparator(StringBuilder sb) {
+        sb.append(NEW_LINE);
+    }
 }
-
-
-

@@ -1,15 +1,17 @@
 package addressbook.model;
 
 /**
- * Represents an object that can be searched using a query string.
+ * Defines behavior for domain objects that can be searched using
+ * a query string.
  */
 public interface Matchable {
+
     /**
-     * Checks if the object matches the given query string.
+     * Determines whether this object contains the supplied search term
+     * in any searchable field.
      *
-     * @param query The search term to match.
-     * @return true if the object contains the query in any relevant field.
+     * @param query search term
+     * @return {@code true} if this object matches the query
      */
     boolean matches(String query);
 }
-
